@@ -19,13 +19,22 @@
 		<div align="center" class="container">
 			<br>
 
+			<input class="form-check-input" type="checkbox" value="" id="check1" checked>
 			<input type="number" value="-27.4318" step="0.0001" id="coord1">
 			<input type="number" value="-48.4617" step="0.0001" id="coord2">
-			<input type="text" placeholder="Input marker text here" id="description">
+			<input type="text" placeholder="Input marker text here" id="description1">
+
+			<br><br>
+
+			<input class="form-check-input" type="checkbox" value="" id="check2">
+			<input type="number" value="-27.4318" step="0.0001" id="coord3">
+			<input type="number" value="-48.4617" step="0.0001" id="coord4">
+			<input type="text" placeholder="Input marker text here" id="description2">
 
 			<br><br>
 
 			<button type="button" id="addBtn" class="btn btn-info">Add Marker</button>
+			<button type="button" id="connectBtn" class="btn btn-info">Connect Points</button>
 
 			<br><br>
 
@@ -42,18 +51,51 @@
 				L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 				$('#addBtn').click(function() {
-					var x = $('#coord1').val();
-					var y = $('#coord2').val();
-					var desc = $('#description').val();
+					if ($('#check1').is(':checked')) {
+						var x = $('#coord1').val();
+						var y = $('#coord2').val();
+						var desc = $('#description1').val();
+						
+						L.marker([x, y], {draggable: true}).addTo(map)
+										.bindPopup(desc)
+										.openPopup();
+					}
+
+					if ($('#check2').is(':checked')) {
+						var x = $('#coord3').val();
+						var y = $('#coord4').val();
+						var desc = $('#description2').val();
+						
+						L.marker([x, y]).addTo(map)
+										.bindPopup(desc)
+										.openPopup();
+					}
+				});
+
+				$('#connectBtn').click(function() {
+					var x1 = $('#coord1').val();
+					var y1 = $('#coord2').val();
 					
-					L.marker([x, y]).addTo(map)
-									.bindPopup(desc)
-									.openPopup();
+					var x2 = $('#coord3').val();
+					var y2 = $('#coord4').val();
+
+					var latlngs = [[x1, y1], [x2, y2]];
+
+					var line = L.polyline(latlngs, {color: 'red'}).addTo(map);
+
+					map.fitBounds(line.getBounds());
 				});
 
 				function onMapClick(e) {
-					$('#coord1').val(e.latlng.lat);
-					$('#coord2').val(e.latlng.lng);
+					if ($('#check1').is(':checked')) {
+						$('#coord1').val(e.latlng.lat);
+						$('#coord2').val(e.latlng.lng);
+					}
+
+					if ($('#check2').is(':checked')) {
+						$('#coord3').val(e.latlng.lat);
+						$('#coord4').val(e.latlng.lng);
+					}
 				}
 
 				map.on('click', onMapClick);
